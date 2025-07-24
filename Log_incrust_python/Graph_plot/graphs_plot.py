@@ -4,14 +4,8 @@ import matplotlib.pyplot as plt
 from scipy.fft import fft # Using scipy's fft
 from matplotlib.ticker import StrMethodFormatter
 
-def graphs_figures(filepath: str, sheetname: str):
-    file_path = filepath
-    sheet_name = sheetname
-
-    # Use pandas to read the Excel file.
-    # Assuming the Excel sheet does not have headers that pandas should use,
-    # or that the data starts from the very first row.
-    # If your data has headers in the first row, you might remove `header=None`.
+def graphs_figures(file_path, sheet_name):
+    
     try:
         table_df = pd.read_excel(file_path, sheet_name=sheet_name, header=0)
     except FileNotFoundError:
@@ -20,7 +14,6 @@ def graphs_figures(filepath: str, sheetname: str):
     except Exception as e:
         print(f"Error reading Excel file: {e}")
         exit()
-
     # %% Leitura das variáveis da planilha
 
     # Criação de referencia no tempo
@@ -233,7 +226,6 @@ def graphs_figures(filepath: str, sheetname: str):
     for axs in axs3[:-1].flat:
         axs.grid(True)
         axs.set_xlim(0, max(timeref)+1)
-        axs.legend(loc='upper right')
         axs.set_xlabel('Tempo [minutos]')
 
     # pH
@@ -242,19 +234,23 @@ def graphs_figures(filepath: str, sheetname: str):
     axs3[0].set_ylim(0,14)
     axs3[0].set_title('pH')
     axs3[0].set_ylabel('pH')
+    axs3[0].legend(loc='upper right')
 
     # Temperatura
     axs3[1].plot(timeref, tt01, label='TT-01')
+    axs3[1].plot(timeref, tt02, label='TT-02')
     axs3[1].plot(timeref, tt05, label='TT-05')
     axs3[1].plot(timeref, tt08, label='TT-08')
     axs3[1].set_title('Temperatura') 
     axs3[1].set_ylabel('T [°C]')
+    axs3[1].legend(loc='upper right')
 
     # Pressão na injeção de CO2
     axs3[2].plot(timeref, pt03, label='PT-03 (Gas)')
     axs3[2].plot(timeref, pt04, label='PT-04 (Líquido)')
     axs3[2].set_title('Pressão na injeção de $CO_{2}$') 
     axs3[2].set_ylabel('Pressão [bar]')
+    axs3[2].legend(loc='upper right')
 
     ## Média móvel da pressão pt05, pt07, pt08 e pt10
     labels_co2 = ['Gás', 'Líquido']
@@ -264,6 +260,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs3[3].set_title('(1) Consumo de $CO_{2}$ gasoso, (2) Consumo de $CO_{2}$ Líquido') 
     axs3[3].set_ylabel('Consumo [kg]')
     axs3[3].yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
+    axs3[3].legend(loc='upper right')
 
     fig3.subplots_adjust(left=0.055, bottom=0.06, right=0.983, top=0.949, hspace=0.496, wspace=0.151)
     fig3.tight_layout()
@@ -295,7 +292,6 @@ def graphs_figures(filepath: str, sheetname: str):
     for axs in axs5[:-1]:
         axs.grid(True)
         axs.set_xlim(0, max(timeref)+1)
-        axs.legend(loc='upper right')
         axs.set_xlabel('Tempo [minutos]')
 
     # Plot 1: Vazão soluções
@@ -305,6 +301,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[0].set_ylim([0, 500])
     axs5[0].set_yticks(np.arange(0, 501, 100))
     axs5[0].set_ylabel('Vazão mássica [kg/h]')
+    axs5[0].legend(loc='upper right')
 
 
     # Plot 2: Pressão na saída da bomba
@@ -313,6 +310,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[1].set_ylim([0, 200])
     axs5[1].set_title('Pressão na saída das bombas')
     axs5[1].set_ylabel('Pressão [bar]')
+    axs5[1].legend(loc='upper right')
 
 
     # Plot 3: pH
@@ -322,6 +320,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[2].set_yticks([0, 3.5, 7, 10.5, 14])
     axs5[2].set_title('pH')
     axs5[2].set_ylabel('pH')
+    axs5[2].legend(loc='upper right')
 
 
     # Plot 4: Vazão CO2
@@ -331,6 +330,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[3].set_ylim([0, 50])
     axs5[3].set_ylabel('Vazão mássica [kg/h]')
     axs5[3].yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
+    axs5[3].legend(loc='upper right')
 
 
     # Plot 5: Media movel da pressão na saída das bombas
@@ -341,14 +341,17 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[4].set_ylim([0, 200])
     axs5[4].set_title('Pressão na saída das bombas - Média Móvel')
     axs5[4].set_ylabel('Pressão [bar]')
+    axs5[4].legend(loc='upper right')
 
 
     # Plot 6: Temperatura
     axs5[5].plot(timeref, tt01, label='TT-01')
+    axs5[5].plot(timeref, tt02, label='TT-02')
     axs5[5].plot(timeref, tt05, label='TT-05')
     axs5[5].plot(timeref, tt08, label='TT-08')
     axs5[5].set_title('Temperatura')
     axs5[5].set_ylabel('°C')
+    axs5[5].legend(loc='upper right')
 
 
     # Plot 7: Restrição
@@ -356,6 +359,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[6].plot(timeref, pv08ret, label='PV-08')
     axs5[6].set_title('Restrição da Válvula')
     axs5[6].set_ylabel('Restrição [%]')
+    axs5[6].legend(loc='upper right')
 
 
     # Plot 8: Pressão pt05, pt07, pt08 e pt10
@@ -366,6 +370,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[7].set_ylim([0, 200])
     axs5[7].set_title('Pressão no trecho de testes')
     axs5[7].set_ylabel('Pressão [bar]')
+    axs5[7].legend(loc='upper right')
 
 
     # Plot 9: Pressao CO2
@@ -374,6 +379,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[8].set_ylim([0, 120])
     axs5[8].set_title('Pressão na injeção de $CO_{2}$')
     axs5[8].set_ylabel('Pressão [bar]')
+    axs5[8].legend(loc='upper right')
 
 
     # Plot 10: Média móvel da pressão pt05, pt07, pt08 e pt10
@@ -384,6 +390,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[9].set_ylim([0, 200])
     axs5[9].set_title('Pressão no trecho de testes - Média Móvel')
     axs5[9].set_ylabel('Pressão [bar]')
+    axs5[9].legend(loc='upper right')
 
     # Plot 11: Vazao CO2 Média Móvel
     axs5[10].plot(timeref, ma_fit03, label='Gas')
@@ -392,6 +399,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[10].set_title('Vazão de $CO_{2}$ - Média Móvel')
     axs5[10].set_ylabel('Vazão [kg/h]')
     axs5[10].yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
+    axs5[10].legend(loc='upper right')
 
     # Plot 12: Consumo co2 (bar plot)
     axs5[11].bar(labels_co2, plot_co2_values)
@@ -399,6 +407,7 @@ def graphs_figures(filepath: str, sheetname: str):
     axs5[11].set_ylabel('Consumo [kg]')
     axs5[11].grid(True, axis='y')
     axs5[11].yaxis.set_major_formatter(StrMethodFormatter('{x:,.0f}'))
+    axs5[11].legend(loc='upper right')
 
 
     # %% Uso da transformada de Fourier para análise do espectro frequencias/amplitudes

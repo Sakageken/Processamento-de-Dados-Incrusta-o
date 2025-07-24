@@ -2,14 +2,7 @@ import pandas as pd
 import numpy as np
 from scipy.fft import fft # Using scipy's fft
 
-def mean_std(filepath: str, sheetname: str):
-    file_path = filepath
-    sheet_name = sheetname
-
-    # Use pandas to read the Excel file.
-    # Assuming the Excel sheet does not have headers that pandas should use,
-    # or that the data starts from the very first row.
-    # If your data has headers in the first row, you might remove `header=None`.
+def mean_std(file_path, sheet_name):
     try:
         table_df = pd.read_excel(file_path, sheet_name=sheet_name, header=0)
     except FileNotFoundError:
@@ -18,7 +11,6 @@ def mean_std(filepath: str, sheetname: str):
     except Exception as e:
         print(f"Error reading Excel file: {e}")
         exit()
-
     # %% Leitura das variáveis da planilha
 
     # Criação de referencia no tempo
@@ -100,7 +92,7 @@ def mean_std(filepath: str, sheetname: str):
         if (pt05 >= 60).sum() >= 1:
             print('Using the pressure as intervaling time')
             pressure_threshold = pt05.mean() - pt05.std()/5
-            print(f"Pressure thresholed = {pressure_threshold}")
+           
 
             # Find t_i: first index where pt05 >= threshold
             valid_indices_ti_pt = np.where(pt05.values >= pressure_threshold)[0]
@@ -179,9 +171,10 @@ def mean_std(filepath: str, sheetname: str):
     desv_sol = np.nanmean([desv_sol1, desv_sol2]) if not (np.isnan(desv_sol1) and np.isnan(desv_sol2)) else np.nan
 
     # Temperatura na linha dos cupons, utilizando o termopar da linha antiga
-    media_temp = safe_stat(tt05, slice_obj, 'mean')
-    desv_temp = safe_stat(tt05, slice_obj, 'std')
-
+    media_temp_lv = safe_stat(tt05, slice_obj, 'mean')
+    desv_temp_lv = safe_stat(tt05, slice_obj, 'std')
+    media_temp_ln = safe_stat(tt08, slice_obj, 'mean')
+    desv_temp_ln = safe_stat(tt08, slice_obj, 'std')
     # CO2
     media_co2 = safe_stat(fit04, slice_obj, 'mean') # Assuming fit04 (liquid CO2) is used for this calc
     co2_por_sol = (media_co2 / (2 * media_sol)) * 100 if media_sol != 0 and not np.isnan(media_co2) and not np.isnan(media_sol) else np.nan
@@ -212,7 +205,8 @@ def mean_std(filepath: str, sheetname: str):
     # Matriz com os valores de medias e desvios
     table_data_np = np.array([
         [np.nan, np.nan],  # ph - not calculated here, placeholder
-        [media_temp, desv_temp],
+        [media_temp_ln, desv_temp_ln],
+        [media_temp_lv, desv_temp_lv],
         [media_co2, np.nan], # desv_co2 not calculated
         [media_sol, desv_sol],
         [co2_por_sol, np.nan],
@@ -230,7 +224,7 @@ def mean_std(filepath: str, sheetname: str):
     # Label da matriz a ser plotada
     columns_py = ['Média', 'Desvio Padrão']
     rows_py = [
-        'pH 1 [-]', 'Temperatura [ºC]', 'Vazão CO2 [kg/h]', 'Vazão soluções [kg/h]', 'Vazão CO2/Sol [%]',
+        'pH 1 [-]', 'Temperatura linha nova [ºC]', 'Temperatura linha velha [ºC]','Vazão CO2 [kg/h]', 'Vazão soluções [kg/h]', 'Vazão CO2/Sol [%]',
         'Pressão linha nova [bar]', 'Pressão linha velha [bar]', 'Campo mag [Gauss]', 'DeltaV [%]',
         'Vazao solucao linha nova [kg/h]', 'Vazao solucao linha velha [kg/h]',
         'Massa total linha nova [kg]', 'Massa total linha velha [kg]', 'Sol_saída/Sol_bombas [%]'
